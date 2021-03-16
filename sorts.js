@@ -2,30 +2,36 @@ const { performance } = require('perf_hooks');
 var Table = require('cli-table');
 var table = new Table({
     head: ['Sort-Type', '10^1 Max Range', '10^2 Max Range', '10^3 Max Range',
-        '10^4 Max Range', '10^5 Max Range', '10^6 Max Range', '10^7 Max Range']
+        '10^4 Max Range', '10^5 Max Range', '10^6 Max Range', '10^7 Max Range', '10^8 Max Range']
 });
 var row1 = ["Count"];
 var row2 = ["Radix"];
+var row3 = ["Bucket"];
+var row4 = ["Merge"];
 
 const size = 100000;
 var randomArr = new Array(size);
 var max;
 
-for (let m = 1; m < 8; m++) {
+for (let m = 1; m < 9; m++) {
     max = Math.pow(10, m)
     for (let i = 0; i < size; i++)
         randomArr[i] = Math.floor(Math.random() * (max + 1));
 
-    //count sort    
-    var t0 = performance.now();
-    let countSortArr = countSort();
-    var t1 = performance.now();
-    if (checkSort(countSortArr))
-        row1.push((t1 - t0).toFixed(4) + " ms");
-    else {
-        console.log("Error Count Sort");
-        System.exit(0);
+    //count sort
+    if (m < 8) {
+        var t0 = performance.now();
+        let countSortArr = countSort();
+        var t1 = performance.now();
+        if (checkSort(countSortArr))
+            row1.push((t1 - t0).toFixed(4) + " ms");
+        else {
+            console.log("Error Count Sort");
+            System.exit(0);
+        }
     }
+    else
+        row1.push("Out of Memory");
     //radix sort
     var t0 = performance.now();
     let radixSortArr = radixSort();

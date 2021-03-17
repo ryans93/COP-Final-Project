@@ -4,6 +4,7 @@ var table = new Table({
     head: ['Sort-Type', '10^1 Max Range', '10^2 Max Range', '10^3 Max Range',
         '10^4 Max Range', '10^5 Max Range', '10^6 Max Range', '10^7 Max Range', '10^8 Max Range']
 });
+//Table Rows
 var row1 = ["Count"];
 var row2 = ["Radix"];
 var row3 = ["Bucket"];
@@ -27,11 +28,12 @@ for (let m = 1; m < 9; m++) {
             row1.push((t1 - t0).toFixed(4) + " ms");
         else {
             console.log("Error Count Sort");
-            System.exit(0);
+            process.exit(0);
         }
     }
     else
         row1.push("Out of Memory");
+
     //radix sort
     var t0 = performance.now();
     let radixSortArr = radixSort();
@@ -40,12 +42,19 @@ for (let m = 1; m < 9; m++) {
         row2.push((t1 - t0).toFixed(4) + " ms");
     else {
         console.log("Error Radix Sort");
-        System.exit(0);
+        process.exit(0);
     }
+
+    //bucket sort(s)
+    //CODE HERE
+
+    //merge sort
+    //CODE HERE
 }
 
 table.push(row1);
 table.push(row2);
+//push rows 3-4 here when sorts are completed
 console.log(table.toString());
 
 function countSort() {
@@ -61,13 +70,14 @@ function countSort() {
         sum += value;
         countArr[i] = sum;
     });
-
     sum = 0;
     countArr.forEach((value, index) => {
+        let count = 0;
         for (let i = 0; i < countArr[index] - sum; i++) {
             sortedArray[countArr[index] - (i + 1)] = index;
-            sum++;
+            count++;
         }
+        sum += count;
     });
     return sortedArray;
 }
@@ -107,7 +117,8 @@ function radixSort() {
             table2 = [[], [], [], [], [], [], [], [], [], []];
         }
     }
-    if (digitLength % 2 == 1) {
+
+    if (digitLength % 2 == 0) {
         for (let j = 0; j < table1.length; j++) {
             for (let k = 0; k < table1[j].length; k++) {
                 sortedArr.push(table1[j][k])
@@ -116,7 +127,7 @@ function radixSort() {
     }
     else {
         for (let j = 0; j < table2.length; j++) {
-            for (let k = 0; j < table2[j].length; k++) {
+            for (let k = 0; k < table2[j].length; k++) {
                 sortedArr.push(table2[j][k])
             }
         }
@@ -124,10 +135,25 @@ function radixSort() {
     return sortedArr;
 }
 
+//bucket sort function
+
+//merge sort function
+
 function checkSort(sortedArray) {
+    if (sortedArray.length != size){
+        console.log("Array size doesn't match");
+        return false;
+    }
+        
     for (let i = 0; i < sortedArray.length - 1; i++) {
-        if (sortedArray[i] > sortedArray[i + 1])
+        if (sortedArray[i] > sortedArray[i + 1]){
+            console.log("Array is not properly sorted");
             return false;
+        }     
+        if (typeof sortedArray[i] != "number" || Number.isNaN(sortedArray[i])){
+            console.log("Array contains element that is not a number or is undefined");
+            return false;
+        }
     }
     return true;
 }

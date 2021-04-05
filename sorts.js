@@ -15,6 +15,7 @@ var randomArr = new Array(size);
 var max;
 
 for (let m = 1; m < 9; m++) {
+    //initialize random array
     max = Math.pow(10, m)
     for (let i = 0; i < size; i++)
         randomArr[i] = Math.floor(Math.random() * (max + 1));
@@ -46,7 +47,15 @@ for (let m = 1; m < 9; m++) {
     }
 
     //bucket sort(s)
-    //CODE HERE
+    var t0 = performance.now();
+    let bucketSortArr = BucketSort(randomArr, 1);
+    var t1 = performance.now();
+    if (checkSort(bucketSortArr))
+        row3.push((t1 - t0).toFixed(4) + " ms");
+    else {
+        console.log("Error Radix Sort");
+        process.exit(0);
+    }
 
     //merge sort
     var t0 = performance.now();
@@ -63,6 +72,7 @@ for (let m = 1; m < 9; m++) {
 table.push(row1);
 table.push(row2);
 //push rows 3-4 here when sorts are completed
+table.push(row3);
 table.push(row4);
 console.log(table.toString());
 
@@ -146,6 +156,43 @@ function radixSort() {
 
 //bucket sort function
 
+function BucketSort(toSort, bucketAmount) {
+    var max = Math.max.apply(Math,toSort);
+    var buckets = new Array(bucketAmount);
+    for (var i = 0; i < bucketAmount; i++) {
+        buckets[i] = [];
+    }
+    for (var i = 0; i < toSort.length; i++) {
+        var index = Math.floor(bucketAmount*toSort[i]/max);
+        if (index == bucketAmount) {
+            index--;
+        }
+        buckets[index].push(toSort[i]);
+    }
+    var temp;
+    for (var i = 0; i < bucketAmount; i++) {
+        /* Insertion sort each bucket */
+        for (var j = 1; j < buckets[i].length; j++) { 
+            temp = buckets[i][j]          
+            index = j - 1;
+            while (index >= 0) {
+                if (temp < buckets[i][index]) {
+                    buckets[i][index + 1] = buckets[i][index];
+                    index--;
+                } else {
+                    break;
+                }  
+            }
+            buckets[i][index+1] = temp;
+        }
+    }
+    var toReturn = [];
+    for (var i = 0; i < bucketAmount; i++) {
+        toReturn = toReturn.concat(buckets[i]);
+    }
+    return toReturn;
+}
+
 /*
  * merge sort driver function
  * Takes in no parameters
@@ -154,8 +201,6 @@ function radixSort() {
 function mergeSort() {
     let sortedArray = randomArr;
     let tempArray = new Array(size);
-
-
     mergeSortRecursive(sortedArray, tempArray,0, size - 1);
 
     return sortedArray;
@@ -238,11 +283,13 @@ function merge(sortedArray, tempArray, leftBegin, leftEnd, rightEnd) {
 } // end merge
 
 function checkSort(sortedArray) {
+    // sizes of arrays are the same
     if (sortedArray.length != size){
         console.log("Array size doesn't match");
         return false;
     }
 
+    //sorted array is sorted properly and all data firleds are valid
     for (let i = 0; i < sortedArray.length - 1; i++) {
         if (sortedArray[i] > sortedArray[i + 1]){
             console.log("Array is not properly sorted");
@@ -253,5 +300,26 @@ function checkSort(sortedArray) {
             return false;
         }
     }
+
+    // sorted array contains all elements of original array
+    for (let i = 0; i < randomArr.length; i++){
+        if(!binarySearch(sortedArray, randomArr[i], 0, sortedArray.length)){
+            console.log("Array is missing element " + randomArr[i] + " from original array.");
+            return false;
+        }
+            
+    }
     return true;
+}
+
+function binarySearch(arr, n, min, max){
+    let index = min + Math.floor((max - min) / 2);
+    if (arr[index] == n)
+        return true;
+    else if (arr[index] > n){
+        return binarySearch(arr, n, min, index)
+    }
+    else {
+        return binarySearch(arr, n, index, max)
+    }
 }

@@ -49,12 +49,21 @@ for (let m = 1; m < 9; m++) {
     //CODE HERE
 
     //merge sort
-    //CODE HERE
+    var t0 = performance.now();
+    let mergeSortArr = mergeSort();
+    var t1 = performance.now();
+    if (checkSort(mergeSortArr))
+        row4.push((t1 - t0).toFixed(4) + " ms");
+    else {
+        console.log("Error Merge Sort");
+        process.exit(0);
+    }
 }
 
 table.push(row1);
 table.push(row2);
 //push rows 3-4 here when sorts are completed
+table.push(row4);
 console.log(table.toString());
 
 function countSort() {
@@ -137,19 +146,108 @@ function radixSort() {
 
 //bucket sort function
 
-//merge sort function
+/*
+ * merge sort driver function
+ * Takes in no parameters
+ * Calls mergeSortRecursive, which recursively completes merge sort
+*/
+function mergeSort() {
+    let sortedArray = randomArr;
+    let tempArray = new Array(size);
+
+
+    mergeSortRecursive(sortedArray, tempArray,0, size - 1);
+
+    return sortedArray;
+} // end mergeSort
+
+/*
+ * Recursively completes merge sort on sortedArray
+ * Takes in four parameters:
+ * 1. The array to be sorted
+ * 2. A temporary array of equal size to the array to be sorted to assist with the merging of sorted sub arrays
+ * 3. The left most index of the array
+ * 4. The right most index of the array
+ *
+ * Calls mergeSortRecursive on the left and right halves of the array
+ * Then calls merge to merge the two sub arrays back together
+ */
+function mergeSortRecursive(sortedArray, tempArray, leftIndex, rightIndex) {
+    let centerIndex = Math.floor((leftIndex + rightIndex) / 2);
+
+    // Proceed with another layer of recursion only if the index of the beginning of the array is less than then end of the array
+    if(leftIndex < rightIndex) {
+        mergeSortRecursive(sortedArray, tempArray, leftIndex, centerIndex);
+        mergeSortRecursive(sortedArray, tempArray, (centerIndex + 1), rightIndex);
+
+        merge(sortedArray, tempArray, leftIndex, centerIndex, rightIndex);
+    } // end if
+
+    return;
+} // end mergeSortRecursive
+
+/*
+ * Merges two sorted arrays
+ * Takes in five parameters:
+ * 1. The array in with two sub arrays to be merged
+ * 2. A temporary array of equal size to the array with sub arrays to be merged to assist with the merging of sorted sub arrays
+ * 3. The index of the beginning of the left sub array
+ * 4. The index of the end of the left sub array
+ * 5. The index of the end of the right sub array
+ *
+ * Merges the two sorted sub arrays
+ */
+function merge(sortedArray, tempArray, leftBegin, leftEnd, rightEnd) {
+    let beginIndex = leftBegin;     // Stores the index of where the merged array should begin in sortedArray
+    let rightBegin = leftEnd + 1;   // Stores the index corresponding to the beginning of the right sub array
+
+    // Copies the section of sortedArray corresponding to the two sub arrays to be merged into tempArray
+    for(let i = leftBegin; i < (rightEnd + 1); i++) {
+        tempArray[i] = sortedArray[i];
+    } // end for
+
+    // While elements are left in both right sub arrays, copy the smallest of the current elements into sortedArray
+    while((leftBegin <= leftEnd) && (rightBegin <= rightEnd)) {
+        if(tempArray[leftBegin] <= tempArray[rightBegin]) {
+            sortedArray[beginIndex] = tempArray[leftBegin];
+            leftBegin++;
+        }
+        else {
+            sortedArray[beginIndex] = tempArray[rightBegin];
+            rightBegin++;
+        } // end if-else
+
+        beginIndex++;
+    } // end while
+
+    // While elements are left in the left sub array, copy them into sortedArray
+    while(leftBegin <= leftEnd) {
+        sortedArray[beginIndex] = tempArray[leftBegin];
+        leftBegin++;
+        beginIndex++;
+    } // end while
+
+    // While elements are left in the right sub array, copy them into sortedArray
+    while(rightBegin <= leftEnd) {
+        sortedArray[beginIndex] = tempArray[rightBegin];
+        rightBegin++;
+        beginIndex++;
+    } // end while
+
+    return;
+} // end merge
 
 function checkSort(sortedArray) {
     if (sortedArray.length != size){
         console.log("Array size doesn't match");
         return false;
     }
-        
+
     for (let i = 0; i < sortedArray.length - 1; i++) {
         if (sortedArray[i] > sortedArray[i + 1]){
             console.log("Array is not properly sorted");
             return false;
-        }     
+        }
         if (typeof sortedArray[i] != "number" || Number.isNaN(sortedArray[i])){
             console.log("Array contains element that is not a number or is undefined");
             return false;

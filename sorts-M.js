@@ -38,7 +38,7 @@ for (let m = 1; m < 9; m++) {
         }
     }
     else
-        row1.push("Out of Memory");
+        row1.push("Out of Memory".red);
 
     //radix sort
     var t0 = performance.now();

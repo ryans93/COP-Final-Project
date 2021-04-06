@@ -4,8 +4,8 @@ var colors = require('colors');
 
 var table = new Table({
     head: ['Sort-Type (N=10^5)'.white, '10^1 Max Range'.white, '10^2 Max Range'.white, '10^3 Max Range'.white,
-        '10^4 Max Range'.white, '10^5 Max Range'.white, '10^6 Max Range'.white, '10^7 Max Range'.white,
-         '10^8 Max Range'.white]
+    '10^4 Max Range'.white, '10^5 Max Range'.white, '10^6 Max Range'.white, '10^7 Max Range'.white,
+    '10^8 Max Range'.white]
 });
 //Table Rows
 var row1 = ["Count".red];
@@ -21,15 +21,16 @@ var max;
 for (let m = 1; m < 9; m++) {
     //initialize random array
     max = Math.pow(10, m)
-    for (let i = 0; i < size; i++)
+    for (let i = 0; i < size; i++) {
         randomArr[i] = Math.floor(Math.random() * (max + 1));
+    }
 
     //count sort
     if (m < 8) {
         var t0 = performance.now();
         let countSortArr = countSort();
         var t1 = performance.now();
-        if (checkSort(countSortArr)){
+        if (checkSort(countSortArr)) {
             row1.push(((t1 - t0).toFixed(4) + " ms").red);
         }
         else {
@@ -37,14 +38,15 @@ for (let m = 1; m < 9; m++) {
             process.exit(0);
         }
     }
-    else
+    else {
         row1.push("Out of Memory".red);
+    }
 
     //radix sort
     var t0 = performance.now();
     let radixSortArr = radixSort();
     var t1 = performance.now();
-    if (checkSort(radixSortArr)){
+    if (checkSort(radixSortArr)) {
         row2.push(((t1 - t0).toFixed(4) + " ms").yellow);
     }
     else {
@@ -52,22 +54,28 @@ for (let m = 1; m < 9; m++) {
         process.exit(0);
     }
 
-    //bucket sort(s)
+    //bucket sort(1)
     var t0 = performance.now();
     let bucketSortArr = BucketSort(randomArr, 1);
     var t1 = performance.now();
-    if (checkSort(bucketSortArr)){
-        row3a.push(((t1 - t0).toFixed(4) + " ms").green);
+    if (bucketSortArr === "> 1000 ms") {
+        row3a.push("> 1000 ms".green);
     }
     else {
-        console.log("Error Bucket Sort");
-        process.exit(0);
+        if (checkSort(bucketSortArr)) {
+            row3a.push(((t1 - t0).toFixed(4) + " ms").green);
+        }
+        else {
+            console.log("Error Bucket Sort");
+            process.exit(0);
+        }
     }
 
+    // bucket sort(n)
     var t0 = performance.now();
     bucketSortArr = BucketSort(randomArr, size);
     var t1 = performance.now();
-    if (checkSort(bucketSortArr)){
+    if (checkSort(bucketSortArr)) {
         row3b.push(((t1 - t0).toFixed(4) + " ms").blue);
     }
     else {
@@ -79,7 +87,7 @@ for (let m = 1; m < 9; m++) {
     var t0 = performance.now();
     let mergeSortArr = mergeSort();
     var t1 = performance.now();
-    if (checkSort(mergeSortArr)){
+    if (checkSort(mergeSortArr)) {
         row4.push(((t1 - t0).toFixed(4) + " ms").magenta);
     }
     else {
@@ -176,13 +184,14 @@ function radixSort() {
 //bucket sort function
 
 function BucketSort(toSort, bucketAmount) {
-    var max = Math.max.apply(Math,toSort);
+    let t0 = performance.now();
+    var max = Math.max.apply(Math, toSort);
     var buckets = new Array(bucketAmount);
     for (var i = 0; i < bucketAmount; i++) {
         buckets[i] = [];
     }
     for (var i = 0; i < toSort.length; i++) {
-        var index = Math.floor(bucketAmount*toSort[i]/max);
+        var index = Math.floor(bucketAmount * toSort[i] / max);
         if (index == bucketAmount) {
             index--;
         }
@@ -191,8 +200,12 @@ function BucketSort(toSort, bucketAmount) {
     var temp;
     for (var i = 0; i < bucketAmount; i++) {
         /* Insertion sort each bucket */
-        for (var j = 1; j < buckets[i].length; j++) { 
-            temp = buckets[i][j]          
+        for (var j = 1; j < buckets[i].length; j++) {
+            let t1 = performance.now();
+            if ((t1 - t0) > 1000) {
+                return "> 1000 ms";
+            }
+            temp = buckets[i][j]
             index = j - 1;
             while (index >= 0) {
                 if (temp < buckets[i][index]) {
@@ -200,9 +213,9 @@ function BucketSort(toSort, bucketAmount) {
                     index--;
                 } else {
                     break;
-                }  
+                }
             }
-            buckets[i][index+1] = temp;
+            buckets[i][index + 1] = temp;
         }
     }
     var toReturn = new Array(toSort.length);
@@ -224,7 +237,7 @@ function BucketSort(toSort, bucketAmount) {
 function mergeSort() {
     let sortedArray = randomArr;
     let tempArray = new Array(size);
-    mergeSortRecursive(sortedArray, tempArray,0, size - 1);
+    mergeSortRecursive(sortedArray, tempArray, 0, size - 1);
 
     return sortedArray;
 } // end mergeSort
@@ -244,7 +257,7 @@ function mergeSortRecursive(sortedArray, tempArray, leftIndex, rightIndex) {
     let centerIndex = Math.floor((leftIndex + rightIndex) / 2);
 
     // Proceed with another layer of recursion only if the index of the beginning of the array is less than then end of the array
-    if(leftIndex < rightIndex) {
+    if (leftIndex < rightIndex) {
         mergeSortRecursive(sortedArray, tempArray, leftIndex, centerIndex);
         mergeSortRecursive(sortedArray, tempArray, (centerIndex + 1), rightIndex);
 
@@ -270,13 +283,13 @@ function merge(sortedArray, tempArray, leftBegin, leftEnd, rightEnd) {
     let rightBegin = leftEnd + 1;   // Stores the index corresponding to the beginning of the right sub array
 
     // Copies the section of sortedArray corresponding to the two sub arrays to be merged into tempArray
-    for(let i = leftBegin; i < (rightEnd + 1); i++) {
+    for (let i = leftBegin; i < (rightEnd + 1); i++) {
         tempArray[i] = sortedArray[i];
     } // end for
 
     // While elements are left in both right sub arrays, copy the smallest of the current elements into sortedArray
-    while((leftBegin <= leftEnd) && (rightBegin <= rightEnd)) {
-        if(tempArray[leftBegin] <= tempArray[rightBegin]) {
+    while ((leftBegin <= leftEnd) && (rightBegin <= rightEnd)) {
+        if (tempArray[leftBegin] <= tempArray[rightBegin]) {
             sortedArray[beginIndex] = tempArray[leftBegin];
             leftBegin++;
         }
@@ -289,14 +302,14 @@ function merge(sortedArray, tempArray, leftBegin, leftEnd, rightEnd) {
     } // end while
 
     // While elements are left in the left sub array, copy them into sortedArray
-    while(leftBegin <= leftEnd) {
+    while (leftBegin <= leftEnd) {
         sortedArray[beginIndex] = tempArray[leftBegin];
         leftBegin++;
         beginIndex++;
     } // end while
 
     // While elements are left in the right sub array, copy them into sortedArray
-    while(rightBegin <= leftEnd) {
+    while (rightBegin <= leftEnd) {
         sortedArray[beginIndex] = tempArray[rightBegin];
         rightBegin++;
         beginIndex++;
@@ -307,39 +320,39 @@ function merge(sortedArray, tempArray, leftBegin, leftEnd, rightEnd) {
 
 function checkSort(sortedArray) {
     // sizes of arrays are the same
-    if (sortedArray.length != size){
+    if (sortedArray.length != size) {
         console.log("Array size doesn't match");
         return false;
     }
 
     //sorted array is sorted properly and all data firleds are valid
     for (let i = 0; i < sortedArray.length - 1; i++) {
-        if (sortedArray[i] > sortedArray[i + 1]){
+        if (sortedArray[i] > sortedArray[i + 1]) {
             console.log("Array is not properly sorted");
             return false;
         }
-        if (typeof sortedArray[i] != "number" || Number.isNaN(sortedArray[i])){
+        if (typeof sortedArray[i] != "number" || Number.isNaN(sortedArray[i])) {
             console.log("Array contains element that is not a number or is undefined");
             return false;
         }
     }
 
     // sorted array contains all elements of original array
-    for (let i = 0; i < randomArr.length; i++){
-        if(!binarySearch(sortedArray, randomArr[i], 0, sortedArray.length)){
+    for (let i = 0; i < randomArr.length; i++) {
+        if (!binarySearch(sortedArray, randomArr[i], 0, sortedArray.length)) {
             console.log("Array is missing element " + randomArr[i] + " from original array.");
             return false;
         }
-            
+
     }
     return true;
 }
 
-function binarySearch(arr, n, min, max){
+function binarySearch(arr, n, min, max) {
     let index = min + Math.floor((max - min) / 2);
     if (arr[index] == n)
         return true;
-    else if (arr[index] > n){
+    else if (arr[index] > n) {
         return binarySearch(arr, n, min, index)
     }
     else {

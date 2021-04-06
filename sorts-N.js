@@ -4,7 +4,7 @@ var colors = require('colors');
 
 var table = new Table({
     head: ['Sort-Type (M=10^3)'.white, '10^1 Max Size'.white, '10^2 Max Size'.white, '10^3 Max Size'.white,
-    '10^4 Max Size'.white, '10^5 Max Size'.white]
+    '10^4 Max Size'.white, '10^5 Max Size'.white, '10^6 Max Size'.white]
 });
 //Table Rows
 var row1 = ["Count".red];
@@ -16,14 +16,16 @@ var row4 = ["Merge".magenta];
 const max = Math.pow(10, 3);
 var size;
 
-for (let m = 1; m < 6; m++) {
+for (let m = 1; m < 7; m++) {
     //initialize random array
     size = Math.pow(10, m);
     var randomArr = new Array(size);
 
-    for (let i = 0; i < size; i++)
+    for (let i = 0; i < size; i++) {
         randomArr[i] = Math.floor(Math.random() * (max + 1));
+    }
 
+    // count sort
     var t0 = performance.now();
     let countSortArr = countSort();
     var t1 = performance.now();
@@ -47,18 +49,24 @@ for (let m = 1; m < 6; m++) {
         process.exit(0);
     }
 
-    //bucket sort(s)
+    //bucket sort(1)
     var t0 = performance.now();
     let bucketSortArr = BucketSort(randomArr, 1);
     var t1 = performance.now();
-    if (checkSort(bucketSortArr)) {
-        row3a.push(((t1 - t0).toFixed(4) + " ms").green);
+    if (bucketSortArr === "> 1000 ms") {
+        row3a.push("> 1000 ms".green);
     }
     else {
-        console.log("Error Bucket Sort");
-        process.exit(0);
+        if (checkSort(bucketSortArr)) {
+            row3a.push(((t1 - t0).toFixed(4) + " ms").green);
+        }
+        else {
+            console.log("Error Bucket Sort(1)");
+            process.exit(0);
+        }
     }
 
+    // bucket sort(n)
     var t0 = performance.now();
     bucketSortArr = BucketSort(randomArr, size);
     var t1 = performance.now();
@@ -66,7 +74,7 @@ for (let m = 1; m < 6; m++) {
         row3b.push(((t1 - t0).toFixed(4) + " ms").blue);
     }
     else {
-        console.log("Error Bucket Sort");
+        console.log("Error Bucket Sort(N)");
         process.exit(0);
     }
 
@@ -85,7 +93,6 @@ for (let m = 1; m < 6; m++) {
 
 table.push(row1);
 table.push(row2);
-//push rows 3-4 here when sorts are completed
 table.push(row3a);
 table.push(row3b);
 table.push(row4);
@@ -172,7 +179,8 @@ function radixSort() {
 //bucket sort function
 
 function BucketSort(toSort, bucketAmount) {
-    var max = Math.max.apply(Math, toSort);
+    let t0 = performance.now();
+    //var max = Math.max.apply(Math, toSort);
     var buckets = new Array(bucketAmount);
     for (var i = 0; i < bucketAmount; i++) {
         buckets[i] = [];
@@ -188,6 +196,10 @@ function BucketSort(toSort, bucketAmount) {
     for (var i = 0; i < bucketAmount; i++) {
         /* Insertion sort each bucket */
         for (var j = 1; j < buckets[i].length; j++) {
+            let t1 = performance.now();
+            if ((t1 - t0) > 1000) {
+                return "> 1000 ms";
+            }
             temp = buckets[i][j]
             index = j - 1;
             while (index >= 0) {

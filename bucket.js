@@ -1,9 +1,34 @@
-var someArray = [1231231,123123,54,764674,345,59,25345,51,4588,234,12,12,34562,3,3,5];
+var someArray = [
+    1119,
+1024,
+1719,
+ 307,
+1351,
+1581,
+2672,
+  51,
+ 714,
+ 520,
+2290,
+2078,
+ 165,
+ 293,
+2982,
+2641,
+1538,
+1530,
+1308,
+1292,
+2421,
+1819,
+2324,
+2892
+];
 
 //Everything around the function is just test code
 //################ The Actual Function ################
 
-function BucketSort(toSort, bucketAmount = 1) {
+function BucketSort(toSort, bucketAmount = 20) {
     var max = Math.max.apply(Math,toSort);
     var buckets = new Array(bucketAmount);
     for (var i = 0; i < bucketAmount; i++) {
@@ -33,9 +58,13 @@ function BucketSort(toSort, bucketAmount = 1) {
             buckets[i][index+1] = temp;
         }
     }
-    var toReturn = [];
+    var toReturn = new Array(toSort.length);
+    index = 0;
     for (var i = 0; i < bucketAmount; i++) {
-        toReturn = toReturn.concat(buckets[i]);
+        for (var j = 0; j < buckets[i].length; j++) {
+            toReturn[index] = buckets[i][j]
+            index++;
+        }
     }
     return toReturn;
 }

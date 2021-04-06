@@ -47,7 +47,7 @@ for (let m = 1; m < 9; m++) {
     }
 
     //bucket sort(s)
-    var t0 = performance.now();
+    /*var t0 = performance.now();
     let bucketSortArr = BucketSort(randomArr, 1);
     var t1 = performance.now();
     if (checkSort(bucketSortArr))
@@ -55,7 +55,7 @@ for (let m = 1; m < 9; m++) {
     else {
         console.log("Error Radix Sort");
         process.exit(0);
-    }
+    }*/
 
     //merge sort
     var t0 = performance.now();

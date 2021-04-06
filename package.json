@@ -1,0 +1,23 @@
+{
+  "name": "cop-final-project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "bucket.js",
+  "dependencies": {
+    "cli-table": "^0.3.6"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ryans93/COP-Final-Project.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ryans93/COP-Final-Project/issues"
+  },
+  "homepage": "https://github.com/ryans93/COP-Final-Project#readme"
+}

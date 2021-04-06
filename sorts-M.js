@@ -1,14 +1,18 @@
 const { performance } = require('perf_hooks');
 var Table = require('cli-table');
+var colors = require('colors');
+
 var table = new Table({
-    head: ['Sort-Type', '10^1 Max Range', '10^2 Max Range', '10^3 Max Range',
-        '10^4 Max Range', '10^5 Max Range', '10^6 Max Range', '10^7 Max Range', '10^8 Max Range']
+    head: ['Sort-Type (N=10^5)'.white, '10^1 Max Range'.white, '10^2 Max Range'.white, '10^3 Max Range'.white,
+        '10^4 Max Range'.white, '10^5 Max Range'.white, '10^6 Max Range'.white, '10^7 Max Range'.white,
+         '10^8 Max Range'.white]
 });
 //Table Rows
-var row1 = ["Count"];
-var row2 = ["Radix"];
-var row3 = ["Bucket"];
-var row4 = ["Merge"];
+var row1 = ["Count".red];
+var row2 = ["Radix".yellow];
+var row3a = ["Bucket(1)".green];
+var row3b = ["Bucket(n)".blue];
+var row4 = ["Merge".magenta];
 
 const size = 100000;
 var randomArr = new Array(size);
@@ -25,8 +29,9 @@ for (let m = 1; m < 9; m++) {
         var t0 = performance.now();
         let countSortArr = countSort();
         var t1 = performance.now();
-        if (checkSort(countSortArr))
-            row1.push((t1 - t0).toFixed(4) + " ms");
+        if (checkSort(countSortArr)){
+            row1.push(((t1 - t0).toFixed(4) + " ms").red);
+        }
         else {
             console.log("Error Count Sort");
             process.exit(0);
@@ -39,23 +44,34 @@ for (let m = 1; m < 9; m++) {
     var t0 = performance.now();
     let radixSortArr = radixSort();
     var t1 = performance.now();
-    if (checkSort(radixSortArr))
-        row2.push((t1 - t0).toFixed(4) + " ms");
+    if (checkSort(radixSortArr)){
+        row2.push(((t1 - t0).toFixed(4) + " ms").yellow);
+    }
     else {
         console.log("Error Radix Sort");
         process.exit(0);
     }
 
-    
     //bucket sort(s)
     var t0 = performance.now();
     let bucketSortArr = BucketSort(randomArr, 1);
-    //let bucketSortArr = BucketSort(randomArr, Math.floor(randomArr.length/2));
     var t1 = performance.now();
-    if (checkSort(bucketSortArr))
-        row3.push((t1 - t0).toFixed(4) + " ms");
+    if (checkSort(bucketSortArr)){
+        row3a.push(((t1 - t0).toFixed(4) + " ms").green);
+    }
     else {
-        console.log("Error Radix Sort");
+        console.log("Error Bucket Sort");
+        process.exit(0);
+    }
+
+    var t0 = performance.now();
+    bucketSortArr = BucketSort(randomArr, size);
+    var t1 = performance.now();
+    if (checkSort(bucketSortArr)){
+        row3b.push(((t1 - t0).toFixed(4) + " ms").blue);
+    }
+    else {
+        console.log("Error Bucket Sort");
         process.exit(0);
     }
 
@@ -63,8 +79,9 @@ for (let m = 1; m < 9; m++) {
     var t0 = performance.now();
     let mergeSortArr = mergeSort();
     var t1 = performance.now();
-    if (checkSort(mergeSortArr))
-        row4.push((t1 - t0).toFixed(4) + " ms");
+    if (checkSort(mergeSortArr)){
+        row4.push(((t1 - t0).toFixed(4) + " ms").magenta);
+    }
     else {
         console.log("Error Merge Sort");
         process.exit(0);
@@ -73,8 +90,8 @@ for (let m = 1; m < 9; m++) {
 
 table.push(row1);
 table.push(row2);
-//push rows 3-4 here when sorts are completed
-table.push(row3);
+table.push(row3a);
+table.push(row3b);
 table.push(row4);
 console.log(table.toString());
 
@@ -158,7 +175,7 @@ function radixSort() {
 
 //bucket sort function
 
-function BucketSort(toSort, bucketAmount = 20) {
+function BucketSort(toSort, bucketAmount) {
     var max = Math.max.apply(Math,toSort);
     var buckets = new Array(bucketAmount);
     for (var i = 0; i < bucketAmount; i++) {

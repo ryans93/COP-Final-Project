@@ -9,8 +9,9 @@ var table = new Table({
 });
 //Table Rows
 var row1 = ["Count".red];
-var row2 = ["Radix".yellow];
-var row3a = ["Bucket(1)".green];
+var row2a = ["Radix(base 2)".yellow];
+var row2b = ["Radix(base 10)".green];
+var row3a = ["Bucket(1)".cyan];
 var row3b = ["Bucket(n)".blue];
 var row4 = ["Merge".magenta];
 
@@ -42,15 +43,32 @@ for (let m = 1; m < 9; m++) {
         row1.push("Out of Memory".red);
     }
 
-    //radix sort
+    //radix sort base 2
     var t0 = performance.now();
-    let radixSortArr = radixSort();
+    let radixSortArr = radixSort2();
     var t1 = performance.now();
-    if (checkSort(radixSortArr)) {
-        row2.push(((t1 - t0).toFixed(4) + " ms").yellow);
+    if (radixSortArr === "> 1000 ms") {
+        row2a.push("> 1000 ms".yellow);
     }
     else {
-        console.log("Error Radix Sort");
+        if (checkSort(radixSortArr)) {
+            row2a.push(((t1 - t0).toFixed(4) + " ms").yellow);
+        }
+        else {
+            console.log("Error Radix Sort 2");
+            process.exit(0);
+        }
+    }
+
+    //radix sort base 10
+    var t0 = performance.now();
+    radixSortArr = radixSort();
+    var t1 = performance.now();
+    if (checkSort(radixSortArr)) {
+        row2b.push(((t1 - t0).toFixed(4) + " ms").green);
+    }
+    else {
+        console.log("Error Radix Sort 10");
         process.exit(0);
     }
 
@@ -59,11 +77,11 @@ for (let m = 1; m < 9; m++) {
     let bucketSortArr = BucketSort(randomArr, 1);
     var t1 = performance.now();
     if (bucketSortArr === "> 1000 ms") {
-        row3a.push("> 1000 ms".green);
+        row3a.push("> 1000 ms".cyan);
     }
     else {
         if (checkSort(bucketSortArr)) {
-            row3a.push(((t1 - t0).toFixed(4) + " ms").green);
+            row3a.push(((t1 - t0).toFixed(4) + " ms").cyan);
         }
         else {
             console.log("Error Bucket Sort");
@@ -97,7 +115,8 @@ for (let m = 1; m < 9; m++) {
 }
 
 table.push(row1);
-table.push(row2);
+table.push(row2a);
+table.push(row2b);
 table.push(row3a);
 table.push(row3b);
 table.push(row4);
@@ -153,7 +172,7 @@ function radixSort() {
         else {
             for (let j = 0; j < table2.length; j++) {
                 for (let k = 0; k < table2[j].length; k++) {
-                    let string = table2[j][k].toString()
+                    let string = table2[j][k].toString();
                     let digit = parseInt(string.charAt(string.length - (1 + i)));
                     if (Number.isNaN(digit))
                         digit = 0;
@@ -175,6 +194,65 @@ function radixSort() {
         for (let j = 0; j < table2.length; j++) {
             for (let k = 0; k < table2[j].length; k++) {
                 sortedArr.push(table2[j][k])
+            }
+        }
+    }
+    return sortedArr;
+}
+
+function radixSort2() {
+    let t0 = performance.now();
+    let table1 = [[], []];
+    let table2 = [[], []];
+    let sortedArr = [];
+    for (let i = 0; i < randomArr.length; i++) {
+        let bin = Number(randomArr[i]).toString(2);
+        let digit = bin.charAt(bin.length - 1);
+        table1[digit].push(bin);
+    }
+    let digitLength = Number(max).toString(2).length;
+    for (let i = 1; i < digitLength; i++) {
+        let t1 = performance.now();
+        if ((t1 - t0) > 1000) {
+            return "> 1000 ms";
+        }
+        if (i % 2 == 1) {
+            for (let j = 0; j < table1.length; j++) {
+                for (let k = 0; k < table1[j].length; k++) {
+                    let string = table1[j][k];
+                    let digit = parseInt(string.charAt(string.length - (1 + i)));
+                    if (Number.isNaN(digit))
+                        digit = 0;
+                    table2[digit].push(table1[j][k]);
+                }
+            }
+            table1 = [[], []];
+        }
+        else {
+            for (let j = 0; j < table2.length; j++) {
+                for (let k = 0; k < table2[j].length; k++) {
+                    let string = table2[j][k];
+                    let digit = parseInt(string.charAt(string.length - (1 + i)));
+                    if (Number.isNaN(digit))
+                        digit = 0;
+                    table1[digit].push(table2[j][k]);
+                }
+            }
+            table2 = [[], []];
+        }
+    }
+
+    if (digitLength % 2 == 1) {
+        for (let j = 0; j < table1.length; j++) {
+            for (let k = 0; k < table1[j].length; k++) {
+                sortedArr.push(parseInt(table1[j][k], 2));
+            }
+        }
+    }
+    else {
+        for (let j = 0; j < table2.length; j++) {
+            for (let k = 0; k < table2[j].length; k++) {
+                sortedArr.push(parseInt(table2[j][k], 2));
             }
         }
     }
@@ -325,14 +403,14 @@ function checkSort(sortedArray) {
         return false;
     }
 
-    //sorted array is sorted properly and all data firleds are valid
+    //sorted array is sorted properly and all data fields are valid
     for (let i = 0; i < sortedArray.length - 1; i++) {
         if (sortedArray[i] > sortedArray[i + 1]) {
-            console.log("Array is not properly sorted");
+            console.log("Array is not properly sorted at index " + i);
             return false;
         }
         if (typeof sortedArray[i] != "number" || Number.isNaN(sortedArray[i])) {
-            console.log("Array contains element that is not a number or is undefined");
+            console.log("Array contains element that is not a number or is undefined at index " + i);
             return false;
         }
     }

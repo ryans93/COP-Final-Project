@@ -14,10 +14,11 @@ var row3b = ["Bucket(n)".blue];
 var row4 = ["Merge".magenta];
 
 const max = Math.pow(10, 3);
+var size;
 
 for (let m = 1; m < 6; m++) {
     //initialize random array
-    var size = Math.pow(10, m);
+    size = Math.pow(10, m);
     var randomArr = new Array(size);
 
     for (let i = 0; i < size; i++)
@@ -124,7 +125,7 @@ function radixSort() {
         table1[digit].push(randomArr[i]);
     }
     let digitLength = max.toString().length;
-    for (let i = 1; i <= digitLength; i++) {
+    for (let i = 1; i < digitLength; i++) {
         if (i % 2 == 1) {
             for (let j = 0; j < table1.length; j++) {
                 for (let k = 0; k < table1[j].length; k++) {
@@ -151,7 +152,7 @@ function radixSort() {
         }
     }
 
-    if (digitLength % 2 == 0) {
+    if (digitLength % 2 == 1) {
         for (let j = 0; j < table1.length; j++) {
             for (let k = 0; k < table1[j].length; k++) {
                 sortedArr.push(table1[j][k])

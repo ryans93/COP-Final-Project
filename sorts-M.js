@@ -129,7 +129,7 @@ function radixSort() {
         table1[digit].push(randomArr[i]);
     }
     let digitLength = max.toString().length;
-    for (let i = 1; i <= digitLength; i++) {
+    for (let i = 1; i < digitLength; i++) {
         if (i % 2 == 1) {
             for (let j = 0; j < table1.length; j++) {
                 for (let k = 0; k < table1[j].length; k++) {
@@ -156,7 +156,7 @@ function radixSort() {
         }
     }
 
-    if (digitLength % 2 == 0) {
+    if (digitLength % 2 == 1) {
         for (let j = 0; j < table1.length; j++) {
             for (let k = 0; k < table1[j].length; k++) {
                 sortedArr.push(table1[j][k])

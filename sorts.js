@@ -46,16 +46,18 @@ for (let m = 1; m < 9; m++) {
         process.exit(0);
     }
 
+    
     //bucket sort(s)
-    /*var t0 = performance.now();
+    var t0 = performance.now();
     let bucketSortArr = BucketSort(randomArr, 1);
+    //let bucketSortArr = BucketSort(randomArr, Math.floor(randomArr.length/2));
     var t1 = performance.now();
     if (checkSort(bucketSortArr))
         row3.push((t1 - t0).toFixed(4) + " ms");
     else {
         console.log("Error Radix Sort");
         process.exit(0);
-    }*/
+    }
 
     //merge sort
     var t0 = performance.now();
@@ -156,7 +158,7 @@ function radixSort() {
 
 //bucket sort function
 
-function BucketSort(toSort, bucketAmount) {
+function BucketSort(toSort, bucketAmount = 20) {
     var max = Math.max.apply(Math,toSort);
     var buckets = new Array(bucketAmount);
     for (var i = 0; i < bucketAmount; i++) {
@@ -186,9 +188,13 @@ function BucketSort(toSort, bucketAmount) {
             buckets[i][index+1] = temp;
         }
     }
-    var toReturn = [];
+    var toReturn = new Array(toSort.length);
+    index = 0;
     for (var i = 0; i < bucketAmount; i++) {
-        toReturn = toReturn.concat(buckets[i]);
+        for (var j = 0; j < buckets[i].length; j++) {
+            toReturn[index] = buckets[i][j]
+            index++;
+        }
     }
     return toReturn;
 }

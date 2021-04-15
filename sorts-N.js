@@ -6,7 +6,7 @@ var table = new Table({
     head: ['Sort-Type (M=10^3)'.white, '10^1 Max Size'.white, '10^2 Max Size'.white, '10^3 Max Size'.white,
     '10^4 Max Size'.white, '10^5 Max Size'.white, '10^6 Max Size'.white]
 });
-//Table Rows
+// Table Rows
 var row1 = ["Count".red];
 var row2a = ["Radix(base 2)".yellow];
 var row2b = ["Radix(base 10)".green];
@@ -18,7 +18,7 @@ const max = Math.pow(10, 3);
 var size;
 
 for (let m = 1; m < 7; m++) {
-    //initialize random array
+    // initialize random array
     size = Math.pow(10, m);
     var randomArr = new Array(size);
 
@@ -55,7 +55,7 @@ for (let m = 1; m < 7; m++) {
         }
     }
 
-    //radix sort 10
+    // radix sort base 10
     var t0 = performance.now();
     radixSortArr = radixSort();
     var t1 = performance.now();
@@ -67,7 +67,7 @@ for (let m = 1; m < 7; m++) {
         process.exit(0);
     }
 
-    //bucket sort(1)
+    // bucket sort(1)
     var t0 = performance.now();
     let bucketSortArr = BucketSort(randomArr, 1);
     var t1 = performance.now();
@@ -96,7 +96,7 @@ for (let m = 1; m < 7; m++) {
         process.exit(0);
     }
 
-    //merge sort
+    // merge sort
     var t0 = performance.now();
     let mergeSortArr = mergeSort();
     var t1 = performance.now();
@@ -108,7 +108,7 @@ for (let m = 1; m < 7; m++) {
         process.exit(0);
     }
 }
-
+// append table rows and display table
 table.push(row1);
 table.push(row2a);
 table.push(row2b);
@@ -121,11 +121,11 @@ function countSort() {
     let countArr = new Array(max + 1).fill(0);
     let sortedArray = new Array(size);
     let sum = 0;
-
+    // countArr gets frequencies of each element from the original array
     randomArr.forEach((value) => {
         countArr[value]++;
     });
-
+    // CountArr element not 0 gets sum of frequencies preceeding it
     countArr.forEach((value, i) => {
         sum += value;
         countArr[i] = sum;
@@ -133,30 +133,42 @@ function countSort() {
     sum = 0;
     countArr.forEach((value, index) => {
         let count = 0;
+        // loop through the frequency of the element in CountArr (subtract sum to get original frequency value)
         for (let i = 0; i < countArr[index] - sum; i++) {
+            // sets sortedArray element to index, starts at countArr[index] and counts down;
             sortedArray[countArr[index] - (i + 1)] = index;
+            // count each time we added an element
             count++;
         }
+        // add count to sum
         sum += count;
     });
     return sortedArray;
 }
 
 function radixSort() {
+    // tables with 10 buckets (0-9)
     let table1 = [[], [], [], [], [], [], [], [], [], []];
     let table2 = [[], [], [], [], [], [], [], [], [], []];
     let sortedArr = [];
+    // initialize first table 
     for (let i = 0; i < randomArr.length; i++) {
+        // sort table by getting right-most digit
         let digit = randomArr[i] % 10;
         table1[digit].push(randomArr[i]);
     }
     let digitLength = max.toString().length;
+    // loop through each digit (excluding right-most digit)
     for (let i = 1; i < digitLength; i++) {
+        // we alternate between table1 and table2 depending on what digit we are on
         if (i % 2 == 1) {
+            // iterate through all elements in the previous table in order
             for (let j = 0; j < table1.length; j++) {
                 for (let k = 0; k < table1[j].length; k++) {
                     let string = table1[j][k].toString();
+                    // get ith digit to be sorted
                     let digit = parseInt(string.charAt(string.length - (1 + i)));
+                    // if digit doesn't exist, set it to 0
                     if (Number.isNaN(digit))
                         digit = 0;
                     table2[digit].push(table1[j][k]);
@@ -177,7 +189,7 @@ function radixSort() {
             table2 = [[], [], [], [], [], [], [], [], [], []];
         }
     }
-
+    // loop through last used table to populate sortedArr
     if (digitLength % 2 == 1) {
         for (let j = 0; j < table1.length; j++) {
             for (let k = 0; k < table1[j].length; k++) {
@@ -197,17 +209,21 @@ function radixSort() {
 
 function radixSort2() {
     let t0 = performance.now();
+    // Tables with 2 buckets (0-1)
     let table1 = [[], []];
     let table2 = [[], []];
     let sortedArr = [];
     for (let i = 0; i < randomArr.length; i++) {
+        // convert to binary
         let bin = Number(randomArr[i]).toString(2);
         let digit = bin.charAt(bin.length - 1);
         table1[digit].push(bin);
     }
+    // find digit length of max number in binary
     let digitLength = Number(max).toString(2).length;
     for (let i = 1; i < digitLength; i++) {
         let t1 = performance.now();
+        // if time taken to sort is greater than 1 second, prematurely exit function
         if ((t1 - t0) > 1000) {
             return "> 1000 ms";
         }
@@ -258,7 +274,6 @@ function radixSort2() {
 
 function BucketSort(toSort, bucketAmount) {
     let t0 = performance.now();
-    //var max = Math.max.apply(Math, toSort);
     var buckets = new Array(bucketAmount);
     for (var i = 0; i < bucketAmount; i++) {
         buckets[i] = [];
@@ -275,6 +290,7 @@ function BucketSort(toSort, bucketAmount) {
         /* Insertion sort each bucket */
         for (var j = 1; j < buckets[i].length; j++) {
             let t1 = performance.now();
+            // if time taken to sort is greater than 1 second, prematurely exit function
             if ((t1 - t0) > 1000) {
                 return "> 1000 ms";
             }
@@ -391,6 +407,7 @@ function merge(sortedArray, tempArray, leftBegin, leftEnd, rightEnd) {
     return;
 } // end merge
 
+// validate that array is properly sorted
 function checkSort(sortedArray) {
     // sizes of arrays are the same
     if (sortedArray.length != size) {
@@ -416,7 +433,6 @@ function checkSort(sortedArray) {
             console.log("Array is missing element " + randomArr[i] + " from original array.");
             return false;
         }
-
     }
     return true;
 }
@@ -425,10 +441,7 @@ function binarySearch(arr, n, min, max) {
     let index = min + Math.floor((max - min) / 2);
     if (arr[index] == n)
         return true;
-    else if (arr[index] > n) {
+    if (arr[index] > n)
         return binarySearch(arr, n, min, index)
-    }
-    else {
-        return binarySearch(arr, n, index, max)
-    }
+    return binarySearch(arr, n, index, max)
 }

@@ -6,7 +6,13 @@ This application examines the runtimes of different sorting algorithms. Some sor
 
 ## How to Use
 
-For this application, you will need to install [NodeJS](https://nodejs.org/en/download/). This project is a CLI application that has two modes.
+For this application, you will need to install [NodeJS](https://nodejs.org/en/download/). This project is a CLI application that has two modes. Before running the application, you will need to navigate to the same directory as the [package.json](package.json) in your terminal and run `npm i`. This will create a *node_modules* folder that contains the dependencies needed to run this app. Afterwards, you can run the app by enter one of these commands into the terminal:
+
+1. `node sorts-M`
+
+2. `node sorts-N`
+
+## Features
 
 1. Sorts with varying maximum ranges. This mode can be executed by running `node sorts-M`. This will display a table that examines the runtimes of different sorting algorithms processing arrays of 100k elements with varying ranges (from 10^1 to 10^8).
 

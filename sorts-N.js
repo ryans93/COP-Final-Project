@@ -274,12 +274,16 @@ function radixSort2() {
 
 function BucketSort(toSort, bucketAmount) {
     let t0 = performance.now();
+    // Creates a new list of lists
     var buckets = new Array(bucketAmount);
     for (var i = 0; i < bucketAmount; i++) {
         buckets[i] = [];
     }
+    // Fils each of the buckets with values that are inside toSort
     for (var i = 0; i < toSort.length; i++) {
+        // Index hash function
         var index = Math.floor(bucketAmount * toSort[i] / max);
+        // Checks and correct anomalies in the hash function.
         if (index == bucketAmount) {
             index--;
         }
@@ -307,6 +311,7 @@ function BucketSort(toSort, bucketAmount) {
             buckets[i][index + 1] = temp;
         }
     }
+    // Combines all of the buckets
     var toReturn = new Array(toSort.length);
     index = 0;
     for (var i = 0; i < bucketAmount; i++) {
